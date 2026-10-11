@@ -1,1 +1,3 @@
-export default function EducationPage() { return <section><h1 className="text-2xl font-bold">Edukasi</h1><p className="mt-3">Materi demonstrasi belum ditinjau klinis. Katalog akan tersedia pada fase berikutnya.</p></section>; }
+import { articles } from "@/data/articles.js";
+
+export default function EducationPage() { return <section><h1 className="text-2xl font-bold">Edukasi</h1><p className="mt-3">Contoh materi berikut belum ditinjau klinis.</p><div className="mt-5 space-y-3">{articles.map((article) => <article className="card" key={article.slug}><p className="text-sm font-semibold text-teal-900">DEMO — {article.category}</p><h2 className="text-lg font-bold mt-1">{article.title}</h2><p className="mt-1">{article.summary}</p><p className="mt-3 text-sm">Status review: belum ditinjau klinis.</p></article>)}</div></section>; }
