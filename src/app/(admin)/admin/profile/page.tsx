@@ -1,0 +1,1 @@
+export default function AdminProfilePage() { return <section><h1 className="text-2xl font-bold">Profil Admin</h1><p className="mt-3">Pengaturan profil admin belum tersedia pada fondasi Fase 1.</p></section>; }

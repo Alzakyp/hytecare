@@ -1,0 +1,1 @@
+export default function AdminQuestionsPage() { return <section><h1 className="text-2xl font-bold">Bank Soal</h1><p className="mt-3">Editor dan preview soal belum tersedia pada fondasi Fase 1.</p></section>; }

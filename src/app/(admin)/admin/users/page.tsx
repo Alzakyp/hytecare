@@ -1,0 +1,1 @@
+export default function AdminUsersPage() { return <section><h1 className="text-2xl font-bold">Daftar Pengguna</h1><p className="mt-3">Daftar identitas akun non-medis belum dihubungkan pada fondasi Fase 1.</p></section>; }

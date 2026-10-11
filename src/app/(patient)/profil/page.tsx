@@ -1,0 +1,1 @@
+export default function ProfilePage() { return <section><h1 className="text-2xl font-bold">Profil</h1><p className="mt-3">Pengaturan profil akan tersedia pada fase berikutnya. Preferensi bahasa hanya tersimpan lokal di browser.</p></section>; }

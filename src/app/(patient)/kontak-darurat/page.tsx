@@ -1,0 +1,1 @@
+export default function ContactsPage() { return <section><h1 className="text-2xl font-bold">Kontak Darurat</h1><p className="mt-3">Pengelolaan kontak pribadi belum tersedia pada fondasi Fase 1. Aplikasi tidak melakukan panggilan otomatis.</p></section>; }

@@ -1,0 +1,1 @@
+export default function TrackerPage() { return <section><h1 className="text-2xl font-bold">Catatan Tekanan Darah</h1><p className="mt-3">Pencatatan dan grafik belum tersedia pada fondasi Fase 1.</p></section>; }

@@ -1,0 +1,1 @@
+export default function EducationPage() { return <section><h1 className="text-2xl font-bold">Edukasi</h1><p className="mt-3">Materi demonstrasi belum ditinjau klinis. Katalog akan tersedia pada fase berikutnya.</p></section>; }

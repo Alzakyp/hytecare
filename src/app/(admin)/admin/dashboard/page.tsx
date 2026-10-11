@@ -1,0 +1,1 @@
+export default function AdminDashboardPage() { return <section><h1 className="text-2xl font-bold">Ringkasan Operasional</h1><p className="mt-3">Metrik agregat belum tersedia pada fondasi Fase 1. Admin tidak memiliki akses ke rekam kesehatan pribadi pasien.</p></section>; }
