@@ -1,1 +1,1 @@
-export default function QuizPage() { return <section><h1 className="text-2xl font-bold">Kuis Edukasi</h1><p className="mt-3">Kuis dan penilaian server belum tersedia pada fondasi Fase 1. Skor kuis bukan penilaian kondisi kesehatan.</p></section>; }
+export default function QuizPage() { return <section><h1 className="text-2xl font-bold">Kuis</h1><p className="mt-3">Kuis belum tersedia. Skor kuis bukan penilaian kondisi kesehatan.</p></section>; }
