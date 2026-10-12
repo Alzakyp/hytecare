@@ -8,15 +8,16 @@ import { LogOut, Save, User } from "lucide-react";
 type Props = {
   email: string;
   displayName: string;
+  role?: "Pasien" | "Admin";
 };
 
-export function ProfileView({ email, displayName }: Props) {
+export function ProfileView({ email, displayName, role = "Pasien" }: Props) {
   const [state, action, pending] = useActionState<ProfileState, FormData>(updateDisplayName, {});
   return <div className="space-y-6">
     <div className="card">
       <div className="flex items-center gap-3 pb-4 border-b">
         <span className="icon-tile"><User size={24} aria-hidden="true" /></span>
-        <div><h2 className="font-bold text-lg">Informasi Akun</h2><p className="text-sm text-slate-500">Peran: Pasien</p></div>
+        <div><h2 className="font-bold text-lg">Informasi Akun</h2><p className="text-sm text-slate-500">Peran: {role}</p></div>
       </div>
       <div className="mt-4 space-y-4">
         <div>

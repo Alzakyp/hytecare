@@ -21,3 +21,12 @@ Registrasi publik nonaktif secara default. Jangan jalankan migration atau seed p
 4. Jalankan `supabase/seed.sql` hanya pada koneksi staging dengan setting `hytecare.seed_allowed=true`, `hytecare.project_ref` sama persis dengan `hytecare.expected_project_ref`, dan UUID pasien hasil provisioning. Script tidak membuat `auth.users`, tidak truncate, tidak delete.
 
 Seeder menolak HTTP, hostname bukan `*.supabase.co`, host tidak allowlisted, flag tidak aktif, dan collision akun non-demo. Ulang seed hanya menyentuh row marker/UUID demo. Akun password dan service-role tidak boleh masuk repository, browser, atau log.
+
+## Migration Admin Staging
+
+Jalankan migration berurutan pada Supabase SQL Editor:
+1. `supabase/migrations/202610120001_admin_quiz_rpc.sql` (CRUD kuis/soal/opsi transaksional)
+2. `supabase/migrations/202610120002_admin_users_and_dashboard.sql` (Status akun, audit log, daftar pengguna, ringkasan agregat)
+
+Untuk manajemen pengguna (`/admin/users`), tambahkan `SUPABASE_SERVICE_ROLE_KEY` pada Environment Variables Vercel (server-only).
+

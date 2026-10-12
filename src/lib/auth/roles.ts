@@ -16,6 +16,12 @@ export const getCurrentRole = cache(async (): Promise<{ userId: string; role: Ro
     .eq("user_id", user.id)
     .single();
   if (roleError || !row) return null;
+  const { data: statusRow } = await supabase
+    .from("account_status")
+    .select("is_active")
+    .eq("user_id", user.id)
+    .single();
+  if (statusRow && !statusRow.is_active) return null;
   const role = row.role as Role;
   if (role !== "patient" && role !== "admin") return null;
   return { userId: user.id, role };
