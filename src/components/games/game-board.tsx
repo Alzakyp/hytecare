@@ -3,6 +3,7 @@ import {useState,useEffect,useTransition,useCallback} from "react";
 import {submitGameAction} from "@/lib/games/actions";
 import {gameDuration,remainingFraction} from "@/lib/games/timing.js";
 import {playChime} from "@/lib/games/audio";
+import {cellsBetween,wordAtCells} from "@/lib/games/word-search.js";
 
 type Item={id:string;text?:string;label?:string};
 type Game={slug:string;title:string;game_type:string;config:{items?:Item[];words?:string[];grid?:string[][]}};
@@ -13,6 +14,7 @@ export function GameBoard({game}:{game:Game}){
  const [index,setIndex]=useState(0);
  const [answers,setAnswers]=useState<Record<string,boolean|string>>({});
  const [found,setFound]=useState<string[]>([]);
+ const [markedCells,setMarkedCells]=useState<string[]>([]);
  const [startCell,setStartCell]=useState<[number,number]|null>(null);
  const [startTime,setStartTime]=useState<number>(()=>Date.now());
  const [fraction,setFraction]=useState(1);
@@ -61,13 +63,12 @@ export function GameBoard({game}:{game:Game}){
  const onSelectCell=(r:number,c:number)=>{
   playChime();
   if(!startCell){setStartCell([r,c]);return;}
-  const [r0,c0]=startCell;setStartCell(null);
-  const dr=Math.sign(r-r0),dc=Math.sign(c-c0),len=Math.max(Math.abs(r-r0),Math.abs(c-c0))+1;
-  if((dr===0&&dc===0)||(dr!==0&&dc!==0&&Math.abs(r-r0)!==Math.abs(c-c0)))return;
-  let word='';for(let i=0;i<len;i++)word+=grid[r0+i*dr]?.[c0+i*dc]??'';
+  const cells=cellsBetween(startCell,[r,c]);setStartCell(null);
+  const word=wordAtCells(grid,cells);
   if(words.includes(word)&&!found.includes(word)){
    const nextFound=[...found,word];
    setFound(nextFound);
+   setMarkedCells(previous=>[...new Set([...previous,...cells.map(([row,col])=>`${row}-${col}`)])]);
    if(nextFound.length===words.length)finish(answers,nextFound);
   }
  };
@@ -78,7 +79,7 @@ export function GameBoard({game}:{game:Game}){
     <svg className="w-10 h-10 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7"/></svg>
    </div>
    <h2 className="text-3xl font-extrabold text-[var(--teal-deep)]">Skor {result.score} / {result.total}</h2>
-   <button className="dashboard-link mt-6 mx-auto" onClick={()=>{setResult(null);setAnswers({});setFound([]);setIndex(0);setStartTime(Date.now())}}>Main lagi</button>
+   <button className="dashboard-link mt-6 mx-auto" onClick={()=>{setResult(null);setAnswers({});setFound([]);setMarkedCells([]);setIndex(0);setStartTime(Date.now())}}>Main lagi</button>
   </div>;
  }
 
@@ -95,11 +96,11 @@ export function GameBoard({game}:{game:Game}){
     </div>
     <div className="inline-grid grid-cols-12 gap-1 p-2 bg-[var(--mint)] border border-[var(--border)] rounded-2xl max-w-full overflow-x-auto mx-auto shadow-sm">
      {grid.map((row,r)=>row.map((ch,c)=>(
-      <button key={`${r}-${c}`} type="button" onClick={()=>onSelectCell(r,c)} className={`w-7 h-7 sm:w-9 sm:h-9 text-xs sm:text-sm font-bold rounded-lg border transition-transform active:scale-95 ${startCell&&startCell[0]===r&&startCell[1]===c?'bg-[var(--teal)] text-white border-[var(--teal)] shadow':'bg-white border-[var(--border)]'}`}>{ch}</button>
+      <button key={`${r}-${c}`} type="button" onClick={()=>onSelectCell(r,c)} className={`w-7 h-7 sm:w-9 sm:h-9 text-xs sm:text-sm font-bold rounded-lg border transition-transform active:scale-95 ${startCell&&startCell[0]===r&&startCell[1]===c?'bg-[var(--teal)] text-white border-[var(--teal)] shadow':markedCells.includes(`${r}-${c}`)?'bg-emerald-400 text-emerald-950 border-emerald-600 shadow-sm':'bg-white border-[var(--border)]'}`}>{ch}</button>
      )))}
     </div>
     <div className="flex flex-wrap gap-2 pt-2">
-     {words.map(w=><span key={w} className={`px-2.5 py-1 text-xs rounded-full border transition-colors ${found.includes(w)?'bg-[var(--teal-soft)] border-[var(--teal)] text-[var(--teal-deep)] font-bold':'bg-white border-[var(--border)] text-[var(--ink-muted)]'}`}>{w}</span>)}
+     {words.map(w=><span key={w} className={`px-2.5 py-1 text-xs rounded-full border transition-colors ${found.includes(w)?'bg-emerald-100 border-emerald-500 text-emerald-900 font-bold line-through':'bg-white border-[var(--border)] text-[var(--ink-muted)]'}`}>{w}</span>)}
     </div>
     <button className="secondary-link w-full justify-center" disabled={pending} onClick={()=>finish(answers,found)}>{pending?'Menyimpan…':'Selesaikan sekarang'}</button>
    </div>
