@@ -10,15 +10,18 @@ export type QuizActionState = { error?: string; message?: string };
 
 export async function saveGame(_previous: QuizActionState, form: FormData): Promise<QuizActionState> {
   await requireRole("admin");
-  const parsed = validateGameInput(Object.fromEntries(form));
-  if (!parsed.ok) return { error: parsed.error };
+  const started = performance.now();
   const id = String(form.get("id") ?? "");
   if (id && !/^[0-9a-f-]{36}$/i.test(id)) return { error: "ID game tidak valid." };
+  const input = { ...Object.fromEntries(form), slug: id ? String(form.get("slug") ?? "") : undefined };
+  const parsedGame = validateGameInput(input);
+  if (!parsedGame.ok) return { error: parsedGame.error };
   const supabase = await createClient();
   const { error } = id
-    ? await supabase.from("quiz_games").update(parsed.value).eq("id", id).is("archived_at", null).select("id").single()
-    : await supabase.from("quiz_games").insert(parsed.value).select("id").single();
-  if (error) return { error: error.code === "23505" ? "Slug sudah digunakan." : "Gagal menyimpan game. Coba lagi." };
+    ? await supabase.from("quiz_games").update(parsedGame.value).eq("id", id).is("archived_at", null).select("id").single()
+    : await supabase.from("quiz_games").insert(parsedGame.value).select("id").single();
+  console.info("admin.game.save", { ms: Math.round(performance.now() - started), ok: !error });
+  if (error) return { error: error.code === "23505" ? "Slug sudah digunakan. Ubah judul game." : "Gagal menyimpan game. Coba lagi." };
   revalidatePath("/admin/games");
   redirect("/admin/games");
 }

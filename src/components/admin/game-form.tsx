@@ -10,7 +10,7 @@ export function GameForm({ game = {} }: { game?: Game }) {
  return <form action={action} className="admin-form card">
   {game.id && <input type="hidden" name="id" value={game.id}/>} 
   <label>Judul<input name="title" required maxLength={200} defaultValue={game.title}/></label>
-  <label>Slug<input name="slug" required pattern="[a-z0-9]+(?:-[a-z0-9]+)*" defaultValue={game.slug}/><small>Contoh: kuis-hipertensi</small></label>
+  {game.id ? <label>Slug<input name="slug" readOnly value={game.slug}/><small>Slug dipertahankan agar tautan game tidak berubah.</small></label> : <p className="text-sm text-[var(--ink-muted)]">Slug dibuat otomatis dari judul.</p>}
   <label>Jenis<select name="game_type" defaultValue={game.game_type ?? "quiz"}><option value="quiz">Kuis</option><option value="myth_fact">Mitos / Fakta</option><option value="challenge">Tantangan</option><option value="daily">Harian</option></select></label>
   <label>Deskripsi<textarea name="description" maxLength={2000} rows={5} defaultValue={game.description}/></label>
   {state.error && <p className="form-error" role="alert">{state.error}</p>}

@@ -36,20 +36,26 @@ export async function createUser(_previous: UserActionState, form: FormData): Pr
 }
 
 export async function updateUser(_previous: UserActionState, form: FormData): Promise<UserActionState> {
+  const started = performance.now();
   const actor = await requireRole("admin");
   const parsed = validateUpdateUser(Object.fromEntries(form));
   if (!parsed.ok) return { error: parsed.error };
   let admin;
   try { admin = createAdminClient(); } catch { return { error: "Layanan pengelolaan akun belum dikonfigurasi." }; }
   const { value } = parsed;
-  const supabase = await createClient();
-  const { error: profileError } = await admin.from("profiles").update({ display_name: value.display_name }).eq("id", value.user_id);
+  const authUpdates: { email: string; email_confirm: boolean; password?: string } = { email: value.email, email_confirm: true };
+  if (value.password) authUpdates.password = value.password;
+  const [{ error: profileError }, { error: authError }] = await Promise.all([
+    admin.from("profiles").update({ display_name: value.display_name }).eq("id", value.user_id),
+    admin.auth.admin.updateUserById(value.user_id, authUpdates),
+  ]);
   if (profileError) return { error: "Gagal memperbarui nama pengguna." };
-  const { error: emailError } = await admin.auth.admin.updateUserById(value.user_id, { email: value.email, email_confirm: true });
-  if (emailError) return { error: safeError(emailError.message) };
+  if (authError) return { error: safeError(authError.message) };
+  const supabase = await createClient();
   const { error: roleError } = await supabase.rpc("admin_update_user_role", { p_target_id: value.user_id, p_role: value.role });
   if (roleError) return { error: roleError.message.includes("admin") ? roleError.message : "Gagal memperbarui role pengguna." };
-  await admin.from("admin_audit_log").insert({ actor_id: actor.userId, target_user_id: value.user_id, action: "update_profile", metadata: {} });
+  await admin.from("admin_audit_log").insert({ actor_id: actor.userId, target_user_id: value.user_id, action: "update_profile", metadata: { password_changed: Boolean(value.password) } });
+  console.info("admin.user.update", { ms: Math.round(performance.now() - started), password_changed: Boolean(value.password) });
   revalidatePath("/admin/users"); revalidatePath("/admin/dashboard"); redirect("/admin/users");
 }
 

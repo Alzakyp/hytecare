@@ -11,14 +11,17 @@ export function validateCreateUser(i){
  if(password.length<8||password.length>128)return{ok:false,error:'Password sementara harus 8–128 karakter.'};
  return{ok:true,value:{display_name,email:normalizedEmail,role,password}};
 }
-/** @param {any} i @returns {{ok:true,value:{user_id:string,display_name:string,email:string,role:string}}|{ok:false,error:string}} */
+/** @param {any} i @returns {{ok:true,value:{user_id:string,display_name:string,email:string,role:string,password?:string}}|{ok:false,error:string}} */
 export function validateUpdateUser(i){
- const user_id=text(i?.user_id),display_name=text(i?.display_name),normalizedEmail=text(i?.email).toLowerCase(),role=text(i?.role);
+ const user_id=text(i?.user_id),display_name=text(i?.display_name),normalizedEmail=text(i?.email).toLowerCase(),role=text(i?.role),password=String(i?.password??'');
  if(!uuid.test(user_id))return{ok:false,error:'ID pengguna tidak valid.'};
  if(!display_name||display_name.length>100)return{ok:false,error:'Nama harus 1–100 karakter.'};
  if(!email.test(normalizedEmail)||normalizedEmail.length>320)return{ok:false,error:'Email tidak valid.'};
  if(!roles.has(role))return{ok:false,error:'Role tidak valid.'};
- return{ok:true,value:{user_id,display_name,email:normalizedEmail,role}};
+ if(password&& (password.length<8||password.length>128))return{ok:false,error:'Password baru harus 8–128 karakter.'};
+ const value={user_id,display_name,email:normalizedEmail,role};
+ if(password)value.password=password;
+ return{ok:true,value};
 }
 /** @param {any} i @returns {{q:string,role:string,status:string,page:number}} */
 export function normalizeUserQuery(i){

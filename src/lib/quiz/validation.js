@@ -1,8 +1,12 @@
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const types=new Set(['quiz','myth_fact','challenge','daily']);
+export function slugifyGameTitle(title){
+ const clean=String(title??'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+ return clean||'game';
+}
 /** @param {any} i @returns {{ok:true,value:{title:string,slug:string,description:string,game_type:string}}|{ok:false,error:string}} */
 export function validateGameInput(i){
- const title=String(i?.title??'').trim(),slug=String(i?.slug??'').trim().toLowerCase(),description=String(i?.description??'').trim(),game_type=String(i?.game_type??'');
+ const title=String(i?.title??'').trim(),slug=String(i?.slug||slugifyGameTitle(title)).trim().toLowerCase(),description=String(i?.description??'').trim(),game_type=String(i?.game_type??'');
  if(!title||title.length>200)return{ok:false,error:'Judul harus 1–200 karakter.'};
  if(!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug))return{ok:false,error:'Slug hanya huruf kecil, angka, dan tanda hubung.'};
  if(description.length>2000)return{ok:false,error:'Deskripsi maksimal 2000 karakter.'};
