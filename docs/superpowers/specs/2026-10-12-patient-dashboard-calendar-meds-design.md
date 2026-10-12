@@ -6,7 +6,7 @@ Status: Disetujui secara konseptual.
 Memperbarui antarmuka beranda pasien (`/dashboard`) sesuai referensi visual:
 1. Ringkasan pengukuran terakhir dengan indikator klinis KMK 303/2026.
 2. Kalender bulanan interaktif dengan penanda tanggal pengukuran aktif.
-3. Kartu pengingat minum obat harian untuk **Amlodipine** dan **Captopril** dengan pencatatan konfirmasi harian ("Sudah minum").
+3. Kartu pencatatan konsumsi harian untuk **Amlodipine** dan **Captopril**, tanpa jadwal, dosis, atau instruksi minum. Pasien hanya menandai obat yang benar-benar diresepkan dan diminum.
 4. Navigasi pintasan cepat (Catatan & Kuis, tanpa modul edukasi).
 
 ## Model Data & Keamanan
@@ -15,7 +15,7 @@ Memperbarui antarmuka beranda pasien (`/dashboard`) sesuai referensi visual:
 - `id uuid primary key default gen_random_uuid()`
 - `user_id uuid not null references public.profiles(id) on delete cascade`
 - `medication_name text not null check (medication_name in ('Amlodipine', 'Captopril'))`
-- `intake_date date not null default (current_date at time zone 'Asia/Jakarta')`
+- `intake_date date not null` (tanggal lokal Asia/Jakarta dihitung pada server saat aksi; jangan pakai `current_date at time zone` karena `current_date` bukan timestamp)
 - `taken_at timestamptz not null default now()`
 - `unique (user_id, medication_name, intake_date)`
 
@@ -37,18 +37,19 @@ Memperbarui antarmuka beranda pasien (`/dashboard`) sesuai referensi visual:
    - Link "Lihat detail >" menuju `/tracker`.
 
 3. **Kalender Pengukuran:**
-   - Menampilkan bulan berjalan (grid Minggu–Sabtu).
+   - Menampilkan bulan berjalan (grid Minggu–Sabtu) dalam zona `Asia/Jakarta`.
    - Tanggal yang memiliki minimal 1 rekaman tekanan darah ditandai dengan dot indikator (`• Ada pengukuran`).
-   - Query efisien: `select distinct date(measured_at at time zone 'Asia/Jakarta')`.
+   - Ambil hanya `measured_at` dalam rentang bulan lokal memakai batas UTC pada query; kelompokkan tanggal lokal pada server. Hindari membaca seluruh riwayat.
 
-4. **Jadwal Pengingat Obat:**
+4. **Catatan Obat Hari Ini (bukan jadwal atau pengingat dosis):**
    - Dua kartu obat:
-     - **Amlodipine** (catatan: dosis & waktu sesuai petunjuk dokter).
-     - **Captopril** (catatan: dosis & waktu sesuai petunjuk dokter).
+     - **Amlodipine** (catatan: hanya tandai jika diresepkan dan telah diminum; dosis & waktu sesuai petunjuk dokter).
+     - **Captopril** (catatan sama).
+   - Tidak tampilkan jam/dosis tetap dan tidak menyiratkan kedua obat wajib diminum setiap hari.
    - Status hari ini:
      - Jika ada row di `medication_logs` untuk tanggal hari ini: status "Sudah diminum" (warna hijau/teal, tombol nonaktif atau batalkan).
      - Jika belum: status "Belum diminum", tombol aksi "Tandai Sudah Minum".
-   - Server Action `toggleMedicationIntake(medicationName, date)` dengan `revalidatePath('/dashboard')`.
+   - Server Action `toggleMedicationIntake(medicationName)` menentukan tanggal hari ini di server (Asia/Jakarta), memvalidasi sesi pasien, dan `revalidatePath('/dashboard')`. Jangan percayai tanggal dari browser.
 
 5. **Pintasan Cepat:**
    - Kartu "Riwayat Pengukuran" (`/tracker`).
