@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Gamepad2, ListChecks, ShieldCheck, UserCheck, UserPlus, Users } from "lucide-react";
+import { ArrowRight, Gamepad2, ListChecks, ShieldCheck, UserCheck, Users } from "lucide-react";
 import { requireRole } from "@/lib/auth/roles";
 import { createClient } from "@/lib/supabase/server";
 

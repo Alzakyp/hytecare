@@ -1,0 +1,3 @@
+export function scoreMythFact(key={},answers={}){const total=Object.keys(key).length;let score=0;for(const[k,v]of Object.entries(key)){if(answers[k]===v)score++}return{score,total}}
+export function scoreFoodSort(key={},answers={}){const total=Object.keys(key).length;let score=0;for(const[k,v]of Object.entries(key)){if(answers[k]===v)score++}return{score,total}}
+export function scoreWordSearch(words=[],submitted=[]){const set=new Set(words.map(w=>w.toUpperCase())),found=new Set();for(const s of submitted){const up=String(s??'').trim().toUpperCase();if(set.has(up))found.add(up)}return{score:found.size,total:set.size,found:[...found]}}
