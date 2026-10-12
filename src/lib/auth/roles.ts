@@ -10,15 +10,13 @@ export const getCurrentRole = cache(async (): Promise<{ userId: string; role: Ro
   const supabase = await createClient();
   const { data: { user }, error: authError } = await supabase.auth.getUser();
   if (authError || !user) return null;
-  const { data: row, error: roleError } = await supabase
-    .from("user_roles")
-    .select("role,account_status!inner(is_active)")
-    .eq("user_id", user.id)
-    .single();
-  if (roleError || !row) return null;
-  const status = Array.isArray(row.account_status) ? row.account_status[0] : row.account_status;
-  // ponytail: legacy accounts without status remain active until migration backfill runs.
-  if (status && !status.is_active) return null;
+  const [{ data: row, error: roleError }, { data: statusRow, error: statusError }] = await Promise.all([
+    supabase.from("user_roles").select("role").eq("user_id", user.id).single(),
+    supabase.from("account_status").select("is_active").eq("user_id", user.id).maybeSingle(),
+  ]);
+  if (roleError) return null;
+  // ponytail: accounts created before migration have no status row; migration backfill removes this fallback.
+  if (!statusError && statusRow && !statusRow.is_active) return null;
   const role = row.role as Role;
   if (role !== "patient" && role !== "admin") return null;
   return { userId: user.id, role };
