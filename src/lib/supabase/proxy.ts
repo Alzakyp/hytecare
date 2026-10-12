@@ -1,7 +1,10 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { shouldRefreshSession } from "./proxy-routing.js";
 
 export async function updateSession(request: NextRequest) {
+  // RSC requests are checked by server role guards; avoid a duplicate Auth round-trip.
+  if (!shouldRefreshSession(request.headers)) return NextResponse.next({ request });
   let response = NextResponse.next({ request });
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
