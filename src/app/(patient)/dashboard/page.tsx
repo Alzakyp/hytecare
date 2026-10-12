@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Activity, ArrowUpRight, HeartPulse, Puzzle, ShieldCheck } from "lucide-react";
+import { Activity, ArrowUpRight, HeartPulse, Plus, Puzzle, ShieldCheck } from "lucide-react";
+import { classifyBloodPressure } from "@/lib/blood-pressure/classifier.js";
 import { createClient } from "@/lib/supabase/server";
 import { requireRole } from "@/lib/auth/roles";
 
@@ -17,9 +18,9 @@ export default async function PatientDashboard() {
     <section className="measurement-card mt-7" aria-labelledby="measurement-title">
       <div className="flex items-center gap-3"><span className="icon-tile"><HeartPulse aria-hidden="true" size={24}/></span><h2 id="measurement-title" className="font-semibold">Pengukuran terakhir</h2></div>
       {error ? <div className="mt-5"><p role="alert">Catatan belum dapat dimuat.</p><Link href="/dashboard" className="inline-flex min-h-11 items-center underline">Coba lagi</Link></div>
-        : latest ? <div className="mt-6"><p className="reading-value">{latest.systolic}<span>/</span>{latest.diastolic}<small> mmHg</small></p><p className="mt-3 text-sm">{new Intl.DateTimeFormat("id-ID", { dateStyle: "long", timeStyle: "short", timeZone: "Asia/Jakarta" }).format(new Date(latest.measured_at))}</p>{latest.notes?.includes("Contoh data") && <p className="mt-3 text-sm font-semibold">Contoh data — bukan hasil pengukuran nyata</p>}</div>
+        : latest ? <div className="mt-6"><p className="reading-value">{latest.systolic}<span>/</span>{latest.diastolic}<small> mmHg</small></p><p className={`category-badge category-${classifyBloodPressure(latest.systolic,latest.diastolic).tone}`}>{classifyBloodPressure(latest.systolic,latest.diastolic).label}</p><p className="mt-3 text-sm">{new Intl.DateTimeFormat("id-ID", { dateStyle: "long", timeStyle: "short", timeZone: "Asia/Jakarta" }).format(new Date(latest.measured_at))}</p>{latest.notes?.includes("Contoh data") && <p className="mt-3 text-sm font-semibold">Contoh data — bukan hasil pengukuran nyata</p>}</div>
         : <div className="mt-6"><h3 className="text-xl font-bold">Belum ada catatan tekanan darah</h3><p className="mt-2 text-slate-600">Pengukuran Anda akan tampil di sini setelah tersimpan.</p></div>}
-      <Link href="/tracker" className="dashboard-link mt-6">Lihat catatan <ArrowUpRight aria-hidden="true" size={20}/></Link>
+      <div className="flex flex-wrap gap-3 mt-6"><Link href="/tracker/new" className="dashboard-link"><Plus aria-hidden="true" size={20}/>Catat tekanan darah</Link><Link href="/tracker" className="secondary-link">Riwayat <ArrowUpRight aria-hidden="true" size={20}/></Link></div>
     </section>
     <div className="dashboard-shortcuts mt-5">
       <Link href="/tracker" className="card shortcut"><Activity aria-hidden="true" size={24}/><h2>Catatan Anda</h2><p>Riwayat pengukuran</p><ArrowUpRight aria-hidden="true" size={18}/></Link>
