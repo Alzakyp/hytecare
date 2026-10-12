@@ -1,3 +1,5 @@
+import { HyteLoading } from "@/components/hyte-loading";
+
 export default function AdminLoading() {
-  return <div className="loading-stack" role="status" aria-live="polite"><span className="sr-only">Memuat konsol admin…</span><div className="skeleton h-8 w-52"/><div className="skeleton h-32 w-full"/><div className="skeleton h-64 w-full"/></div>;
+  return <div className="loading-stack"><HyteLoading label="Menyiapkan konsol HyteCare…"/><div className="grid grid-cols-1 sm:grid-cols-3 gap-4"><div className="skeleton h-32"/><div className="skeleton h-32"/><div className="skeleton h-32"/></div></div>;
 }
