@@ -17,6 +17,7 @@ test('picks highest category when systolic and diastolic differ', () => {
   assert.equal(classifyBloodPressure(125, 95).key, 'derajat_1');
   // systolic derajat 2 (165), diastolic optimal (65) -> derajat 2
   assert.equal(classifyBloodPressure(165, 65).key, 'derajat_2');
+  assert.equal(classifyBloodPressure(185, 55).key, 'derajat_3');
 });
 
 test('derajat 3 flags very high and triggers emergency button guidance', () => {

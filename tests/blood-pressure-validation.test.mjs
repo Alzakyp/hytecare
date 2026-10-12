@@ -10,6 +10,8 @@ test('rejects physical sanity boundaries', () => {
   assert.equal(validateReading({...valid,diastolic:'29'}).ok,false);
   assert.equal(validateReading({...valid,diastolic:'201'}).ok,false);
   assert.equal(validateReading({...valid,systolic:'80',diastolic:'90'}).ok,false);
+  assert.equal(validateReading({...valid,systolic:'120abc'}).ok,false);
+  assert.equal(validateReading({...valid,heartRate:'72.5'}).ok,false);
 });
 test('allows empty heart rate and rejects invalid date', () => {
  const r=validateReading({...valid,heartRate:''}); assert.equal(r.ok,true); assert.equal(r.value.heart_rate,null);

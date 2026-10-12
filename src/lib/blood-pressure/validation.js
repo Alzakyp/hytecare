@@ -1,13 +1,14 @@
 export function validateReading(input) {
-  const sys = Number.parseInt(String(input.systolic ?? ''), 10);
-  const dia = Number.parseInt(String(input.diastolic ?? ''), 10);
+  const integer = (value) => /^\d+$/.test(String(value ?? '').trim()) ? Number(value) : NaN;
+  const sys = integer(input.systolic);
+  const dia = integer(input.diastolic);
   if (!Number.isInteger(sys) || sys < 50 || sys > 300) return { ok: false, error: 'Sistolik harus berupa angka 50–300 mmHg.' };
   if (!Number.isInteger(dia) || dia < 30 || dia > 200) return { ok: false, error: 'Diastolik harus berupa angka 30–200 mmHg.' };
   if (sys <= dia) return { ok: false, error: 'Sistolik harus lebih tinggi dari diastolik.' };
   let hr = null;
   const rawHr = String(input.heartRate ?? input.heart_rate ?? '').trim();
   if (rawHr !== '') {
-    const parsed = Number.parseInt(rawHr, 10);
+    const parsed = integer(rawHr);
     if (!Number.isInteger(parsed) || parsed < 30 || parsed > 250) return { ok: false, error: 'Detak jantung harus antara 30–250 bpm.' };
     hr = parsed;
   }
