@@ -1,7 +1,6 @@
 export const patientNavItems = [
   { href: '/dashboard', labelId: 'Beranda', labelEn: 'Home', icon: 'home' },
   { href: '/tracker', labelId: 'Catatan', labelEn: 'Records', icon: 'activity' },
-  { href: '/edukasi', labelId: 'Edukasi', labelEn: 'Education', icon: 'book' },
   { href: '/game', labelId: 'Kuis', labelEn: 'Quiz', icon: 'puzzle' },
   { href: '/lainnya', labelId: 'Lainnya', labelEn: 'More', icon: 'menu' },
 ];

@@ -30,7 +30,7 @@ export function AuthForm({ action, submitLabel, mode }: Props) {
       {state.error && <p role="alert" className="text-red-800">{state.error}</p>}
       {state.message && <p role="status" className="text-teal-900">{state.message}</p>}
       <button type="submit" disabled={pending} className="auth-button w-full" aria-busy={pending}>
-        {pending ? "Memproses…" : submitLabel}
+        {pending ? <><span className="button-spinner" aria-hidden="true" />Memproses…</> : submitLabel}
       </button>
     </form>
   );

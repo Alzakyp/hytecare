@@ -1,4 +1,4 @@
-const patientPaths = ['/dashboard', '/tracker', '/edukasi', '/game', '/lainnya', '/kontak-darurat', '/profil'];
+const patientPaths = ['/dashboard', '/tracker', '/game', '/lainnya', '/kontak-darurat', '/profil'];
 const under = (path, root) => path === root || path.startsWith(`${root}/`);
 
 /** @param {'patient'|'admin'|null|string} role @param {string} pathname @returns {string|null} */

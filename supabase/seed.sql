@@ -54,11 +54,6 @@ insert into public.emergency_contacts(id,user_id,name,relationship,phone_number,
  ('d0000000-0000-4000-8000-000000000002',current_setting('hytecare.demo_patient_id')::uuid,'Kontak Demo Dua','Teman','DEMO-NOT-DIALABLE-002','personal','Contoh data — jangan ditelepon.'),
  ('d0000000-0000-4000-8000-000000000003',current_setting('hytecare.demo_patient_id')::uuid,'Kontak Demo Tiga','Lainnya','DEMO-NOT-DIALABLE-003','personal','Contoh data — jangan ditelepon.')
 on conflict (id) do update set name=excluded.name,relationship=excluded.relationship,phone_number=excluded.phone_number,notes=excluded.notes;
-insert into public.user_article_progress(user_id,article_slug,is_bookmarked,is_read) values
- (current_setting('hytecare.demo_patient_id')::uuid,'mengenal-catatan-tekanan-darah',true,true),
- (current_setting('hytecare.demo_patient_id')::uuid,'menyiapkan-pertanyaan-konsultasi',true,false),
- (current_setting('hytecare.demo_patient_id')::uuid,'mengenali-sumber-informasi',false,true)
-on conflict (user_id,article_slug) do update set is_bookmarked=excluded.is_bookmarked,is_read=excluded.is_read,updated_at=now();
 insert into public.quiz_attempts(id,user_id,game_id,score,total_questions,started_at,completed_at,status,question_snapshot) values
  ('e0000000-0000-4000-8000-000000000001',current_setting('hytecare.demo_patient_id')::uuid,'a0000000-0000-4000-8000-000000000001',1,1,timestamptz '2026-10-06 00:00:00+00',timestamptz '2026-10-06 00:05:00+00','completed','[{"demo":true,"prompt":"Contoh soal edukasi","correct_option":"Ya"}]'),
  ('e0000000-0000-4000-8000-000000000002',current_setting('hytecare.demo_patient_id')::uuid,'a0000000-0000-4000-8000-000000000002',1,1,timestamptz '2026-10-09 00:00:00+00',timestamptz '2026-10-09 00:04:00+00','completed','[{"demo":true,"prompt":"Contoh soal mitos/fakta","correct_option":"Mitos"}]')

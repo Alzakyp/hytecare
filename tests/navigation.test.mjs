@@ -2,9 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { patientNavItems, adminNavItems } from '../src/lib/navigation.js';
 
-test('patient navigation defines exactly the 5 PRD tabs', () => {
+test('patient navigation defines four requested tabs without education', () => {
   const hrefs = patientNavItems.map(item => item.href);
-  assert.deepEqual(hrefs, ['/dashboard', '/tracker', '/edukasi', '/game', '/lainnya']);
+  assert.deepEqual(hrefs, ['/dashboard', '/tracker', '/game', '/lainnya']);
   for (const item of patientNavItems) {
     assert.ok(item.labelId, 'Indonesian label is required');
     assert.ok(item.labelEn, 'English label is required');
