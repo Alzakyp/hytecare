@@ -2,10 +2,11 @@ export * from "./routing.js";
 import { destination } from "./routing.js";
 import { createClient } from "../supabase/server";
 import { redirect } from "next/navigation";
+import { cache } from "react";
 
 export type Role = "patient" | "admin";
 
-export async function getCurrentRole(): Promise<{ userId: string; role: Role } | null> {
+export const getCurrentRole = cache(async (): Promise<{ userId: string; role: Role } | null> => {
   const supabase = await createClient();
   const { data: { user }, error: authError } = await supabase.auth.getUser();
   if (authError || !user) return null;
@@ -18,7 +19,7 @@ export async function getCurrentRole(): Promise<{ userId: string; role: Role } |
   const role = row.role as Role;
   if (role !== "patient" && role !== "admin") return null;
   return { userId: user.id, role };
-}
+});
 
 export async function requireRole(expected: Role): Promise<{ userId: string; role: Role }> {
   const current = await getCurrentRole();
