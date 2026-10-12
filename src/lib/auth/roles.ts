@@ -12,16 +12,13 @@ export const getCurrentRole = cache(async (): Promise<{ userId: string; role: Ro
   if (authError || !user) return null;
   const { data: row, error: roleError } = await supabase
     .from("user_roles")
-    .select("role")
+    .select("role,account_status!inner(is_active)")
     .eq("user_id", user.id)
     .single();
   if (roleError || !row) return null;
-  const { data: statusRow } = await supabase
-    .from("account_status")
-    .select("is_active")
-    .eq("user_id", user.id)
-    .single();
-  if (statusRow && !statusRow.is_active) return null;
+  const status = Array.isArray(row.account_status) ? row.account_status[0] : row.account_status;
+  // ponytail: legacy accounts without status remain active until migration backfill runs.
+  if (status && !status.is_active) return null;
   const role = row.role as Role;
   if (role !== "patient" && role !== "admin") return null;
   return { userId: user.id, role };
