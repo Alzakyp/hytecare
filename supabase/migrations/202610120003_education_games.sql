@@ -4,6 +4,16 @@ alter table public.quiz_games add column if not exists answer_key jsonb not null
 revoke select on public.quiz_games from authenticated;
 grant select(id,slug,title,description,game_type,is_active,archived_at,created_at,updated_at,config) on public.quiz_games to authenticated;
 
+-- Legacy games require active quiz_questions. Config-driven education games use secure RPC scoring instead.
+create or replace function public.validate_active_game() returns trigger language plpgsql set search_path=public as $$
+begin
+ if new.is_active and new.game_type not in ('myth_fact','food_sort','word_search')
+    and not exists(select 1 from public.quiz_questions q where q.game_id=new.id and q.is_active and q.archived_at is null) then
+   raise exception 'Active game requires an active question';
+ end if;
+ return new;
+end $$;
+
 insert into public.quiz_games(slug,title,description,game_type,is_active,config,answer_key) values
 ('mitos-atau-fakta','Mitos atau Fakta','Uji pemahaman tentang hipertensi.','myth_fact',true,
  '{"items":[{"id":"q1","text":"Hipertensi selalu menimbulkan sakit kepala."},{"id":"q2","text":"Makanan tinggi garam dapat meningkatkan tekanan darah."},{"id":"q3","text":"Jika tekanan darah sudah normal, obat boleh dihentikan."},{"id":"q4","text":"Olahraga teratur membantu menurunkan tekanan darah."},{"id":"q5","text":"Hipertensi hanya terjadi pada orang lanjut usia."},{"id":"q6","text":"Stres dapat memengaruhi tekanan darah."},{"id":"q7","text":"Minum obat hipertensi harus seumur hidup."},{"id":"q8","text":"Hipertensi tidak berbahaya jika tidak ada gejala."}]}',
