@@ -10,6 +10,7 @@ begin
  return new;
 end $$;
 
+drop policy if exists readings_admin_select on public.blood_pressure_readings;
 create policy readings_admin_select on public.blood_pressure_readings for select to authenticated using (public.is_admin());
 
 alter table public.admin_audit_log drop constraint if exists admin_audit_log_action_check;
