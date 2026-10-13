@@ -65,6 +65,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   .admin-main{padding:20px 16px;}
 }
 
+.calendar-day.today { outline:2px solid var(--teal); outline-offset:-2px; border-radius:999px; font-weight:800; color:var(--teal-deep); }.calendar-day.measured { background:var(--teal-soft); color:var(--teal-deep); font-weight:700; }
 .dashboard-stagger { opacity:0; transform:translateY(10px); animation:stagger-fade 360ms cubic-bezier(.2,0,0,1) forwards; }
 .dashboard-stagger-1 { animation-delay:40ms; }
 .dashboard-stagger-2 { animation-delay:100ms; }
