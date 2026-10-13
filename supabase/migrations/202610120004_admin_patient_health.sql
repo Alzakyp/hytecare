@@ -1,5 +1,15 @@
 alter table public.profiles add column if not exists phone_number text check (phone_number is null or char_length(phone_number) between 8 and 20);
 grant update(phone_number) on public.profiles to authenticated;
+
+-- Store contact supplied during verified patient signup; role still defaults to patient.
+create or replace function public.handle_new_user() returns trigger language plpgsql security definer set search_path='' as $$
+begin
+ insert into public.profiles(id,display_name,phone_number) values(new.id,left(coalesce(new.raw_user_meta_data->>'display_name',''),100),nullif(new.raw_user_meta_data->>'phone_number',''));
+ insert into public.user_roles(user_id,role) values(new.id,'patient');
+ insert into public.account_status(user_id,is_active) values(new.id,true);
+ return new;
+end $$;
+
 create policy readings_admin_select on public.blood_pressure_readings for select to authenticated using (public.is_admin());
 
 alter table public.admin_audit_log drop constraint if exists admin_audit_log_action_check;

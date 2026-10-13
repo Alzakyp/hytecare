@@ -13,6 +13,16 @@ npm run dev
 
 Registrasi publik nonaktif secara default. Jangan jalankan migration atau seed pada project produksi.
 
+## Registrasi Pasien
+
+Pendaftaran publik diaktifkan dengan menyetel variabel lingkungan Vercel:
+
+```text
+ENABLE_REGISTRATION=true
+```
+
+Data registrasi mencakup nama tampilan, email, nomor HP (wajib), dan kata sandi minimal 12 karakter. Role akun baru selalu `patient`. Petugas RS dapat melihat nomor HP serta riwayat tekanan darah pasien untuk tindak lanjut.
+
 ## Supabase Cloud staging
 
 1. Buat `.env.local` dari `.env.local.example`; isi URL dan publishable key.

@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "../supabase/server";
 import { getCurrentRole } from "./roles";
 import { registrationEnabled } from "./helpers.js";
+import { validateRegistrationInput } from "./registration.js";
 
 export type FormState = { error?: string; message?: string };
 const email = (form: FormData) => String(form.get("email") ?? "").trim();
@@ -30,19 +31,20 @@ export async function signOut(): Promise<void> {
 
 export async function registerPatient(_previous: FormState, form: FormData): Promise<FormState> {
   if (!registrationEnabled({ ENABLE_REGISTRATION: process.env.ENABLE_REGISTRATION })) return { error: "Pendaftaran belum tersedia." };
-  const address = email(form);
-  const secret = password(form);
-  if (!validEmail(address) || secret.length < 12 || secret.length > 128) {
-    return { error: "Gunakan email valid dan kata sandi minimal 12 karakter." };
-  }
+  const parsed = validateRegistrationInput(Object.fromEntries(form));
+  if (!parsed.ok) return { error: parsed.error };
+  const { display_name, email, phone_number, password } = parsed.value;
   const supabase = await createClient();
   const { error } = await supabase.auth.signUp({
-    email: address,
-    password: secret,
-    options: { emailRedirectTo: `${process.env.APP_URL}/auth/callback?next=/dashboard` },
+    email,
+    password,
+    options: {
+      data: { display_name, phone_number },
+      emailRedirectTo: `${process.env.APP_URL}/auth/callback?next=/dashboard`,
+    },
   });
-  if (error) return { error: "Pendaftaran gagal. Coba lagi nanti." };
-  return { message: "Jika pendaftaran berhasil, periksa email untuk konfirmasi akun." };
+  if (error) return { error: "Pendaftaran gagal. Periksa kembali email atau coba lagi." };
+  return { message: "Pendaftaran berhasil dikirim. Jika akun baru membutuhkan verifikasi, periksa email Anda." };
 }
 
 export async function requestPasswordReset(_previous: FormState, form: FormData): Promise<FormState> {

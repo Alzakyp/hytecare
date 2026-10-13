@@ -13,6 +13,8 @@ export function AuthForm({ action, submitLabel, mode }: Props) {
   const [state, formAction, pending] = useActionState(action, {});
   return (
     <form action={formAction} className="space-y-5">
+      {mode === "register" && <div><label htmlFor="display_name" className="block font-medium mb-2">Nama</label><input id="display_name" name="display_name" type="text" required maxLength={100} autoComplete="name" className="auth-input" /></div>}
+      {mode === "register" && <div><label htmlFor="phone_number" className="block font-medium mb-2">Nomor HP</label><input id="phone_number" name="phone_number" type="tel" required inputMode="tel" placeholder="081234567890" className="auth-input" /><p className="mt-2 text-sm">Nomor HP dan riwayat tekanan darah dapat dilihat petugas RS untuk menghubungi Anda.</p></div>}
       {mode !== "reset" && (
         <div>
           <label htmlFor="email" className="block font-medium mb-2">Email</label>

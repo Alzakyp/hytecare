@@ -29,7 +29,7 @@ export function ProfileView({ email, displayName, phoneNumber, role = "Pasien" }
         <form action={action} className="space-y-3">
           <label htmlFor="display_name" className="block text-xs font-bold text-slate-500 uppercase tracking-wider">Nama Tampilan</label>
           <input id="display_name" name="display_name" type="text" maxLength={100} defaultValue={displayName} placeholder="Masukkan nama" className="auth-input" />
-          {role === "Pasien" && <><label htmlFor="phone_number" className="block text-xs font-bold text-slate-500 uppercase tracking-wider mt-3">Nomor handphone</label><input id="phone_number" name="phone_number" type="tel" defaultValue={phoneNumber ?? ""} placeholder="081234567890" className="auth-input mt-1"/><p className="text-xs text-slate-500 mt-1">Nomor dan riwayat tekanan darah Anda dapat dilihat petugas RS untuk menghubungi Anda.</p></>}
+          <label htmlFor="phone_number" className="block text-xs font-bold text-slate-500 uppercase tracking-wider mt-3">Nomor handphone</label><input id="phone_number" name="phone_number" type="tel" defaultValue={phoneNumber ?? ""} placeholder="081234567890" className="auth-input mt-1"/>{!phoneNumber && <p className="text-sm text-amber-800">Belum diisi. Lengkapi nomor HP agar mudah dihubungi.</p>}{role === "Pasien" && <p className="text-xs text-slate-500 mt-1">Nomor dan riwayat tekanan darah Anda dapat dilihat petugas RS untuk menghubungi Anda.</p>}
           {state.error && <p role="alert" className="text-sm text-red-600">{state.error}</p>}
           {state.message && <p role="status" className="text-sm text-teal-800 font-semibold">{state.message}</p>}
           <button type="submit" disabled={pending} className="dashboard-link w-full justify-center">
